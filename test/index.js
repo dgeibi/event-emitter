@@ -1,20 +1,9 @@
-const assert = require('assert');
-
+const { expect } = require('chai');
 const Emitter = require('..');
 
-const Mock = () => ({
-  count: 0,
+const Mock = require('./helper/Mock');
 
-  fn() {
-    return this.mockFn.bind(this);
-  },
-
-  mockFn() {
-    this.count += 1;
-  },
-});
-
-describe('emitter', () => {
+describe('My Emitter', () => {
   it('once-emit', () => {
     const emitter = new Emitter();
     const mock = Mock();
@@ -24,7 +13,7 @@ describe('emitter', () => {
     emitter.once('test', mock.fn());
     emitter.emit('test');
     emitter.emit('test');
-    assert(mock.count === 3);
+    expect(mock.count).to.equal(3);
   });
 
   it('once-emitAsync', async () => {
@@ -35,18 +24,18 @@ describe('emitter', () => {
     emitter.once('test', mock.fn());
     await emitter.emitAsync('test');
     await emitter.emitAsync('test');
-    assert(mock.count === 3);
+    expect(mock.count).to.equal(3);
   });
 
-  it('remove', () => {
+  it('removeListener', () => {
     const emitter = new Emitter();
     const mock = Mock();
     const fn = mock.fn();
     emitter.on('test', fn);
     emitter.on('test', fn);
-    emitter.remove('test', fn);
+    emitter.removeListener('test', fn);
     emitter.emit('test');
-    assert(mock.count === 0);
+    expect(mock.count).to.equal(1);
   });
 
   it('built-in keys', () => {
@@ -56,11 +45,87 @@ describe('emitter', () => {
     });
     const mock = Mock();
     const fn = mock.fn();
-    assert.throws(() => {
+    expect(() => {
+      emitter.on('test', fn);
+    }).throws();
+    expect(() => {
+      emitter.on('event', fn);
+    }).not.throws();
+  });
+
+  it('add during emitting', async () => {
+    const emitter = new Emitter();
+    const mock = Mock();
+    const fn = mock.fn();
+    emitter.on('test', fn);
+    emitter.on('test', fn);
+    emitter.on('test', () => {
+      emitter.on('test', fn);
       emitter.on('test', fn);
     });
-    assert.doesNotThrow(() => {
-      emitter.on('event', fn);
-    });
+    emitter.on('test', fn);
+    await emitter.emitAsync('test');
+    expect(mock.count).to.equal(3);
+    mock.reset();
+    emitter.emit('test');
+    expect(mock.count).to.equal(5);
+  });
+
+  it('rm during emitting', () => {
+    const emitter = new Emitter();
+    const mock = Mock();
+    const bmock = Mock();
+
+    const fn = mock.fn();
+    emitter.on('test', bmock.fn(() => {
+      emitter.removeListener('test', fn);
+      emitter.removeListener('test', fn);
+    }));
+    emitter.on('test', fn);
+    emitter.on('test', fn);
+
+    emitter.emit('test');
+    expect(bmock.count).to.equal(1);
+    expect(mock.count).to.equal(2);
+
+    mock.reset();
+    emitter.emit('test');
+    expect(mock.count).to.equal(0);
+  });
+
+  it('emitAsync all rm', async () => {
+    const emitter = new Emitter();
+    const a = Mock();
+    const b = Mock();
+
+    const fn = a.fn();
+    emitter.on('test', b.fn(() => {
+      emitter.removeListener('test', fn);
+      emitter.removeListener('test', fn);
+    }));
+    emitter.on('test', fn);
+    emitter.on('test', fn);
+
+    await Promise.all([
+      emitter.emitAsync('test'),
+      emitter.emitAsync('test'),
+    ]);
+    expect(b.count).to.equal(2);
+    expect(a.count).to.equal(0);
+  });
+
+  it('emitAsync all once', async () => {
+    const emitter = new Emitter();
+    const a = Mock();
+
+    const fn = a.fn();
+    emitter.once('test', fn);
+    emitter.once('test', fn);
+
+    await Promise.all([
+      emitter.emitAsync('test'),
+      emitter.emitAsync('test'),
+    ]);
+    expect(a.count).to.equal(2);
   });
 });
