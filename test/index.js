@@ -5,7 +5,7 @@ const Mock = require('./helper/Mock');
 
 describe('My Emitter', () => {
   it('on', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
 
     emitter.on('test', mock.fn());
@@ -16,7 +16,7 @@ describe('My Emitter', () => {
   });
 
   it('prependListener', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
     let ret = '';
 
@@ -33,7 +33,7 @@ describe('My Emitter', () => {
   });
 
   it('once-emit', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
 
     emitter.once('test', mock.fn());
@@ -45,7 +45,7 @@ describe('My Emitter', () => {
   });
 
   it('once-emitAsync', async () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
     emitter.once('test', mock.fn());
     emitter.once('test', mock.fn());
@@ -56,7 +56,7 @@ describe('My Emitter', () => {
   });
 
   it('removeListener', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
     const fn = mock.fn();
     emitter.on('test', fn);
@@ -67,7 +67,7 @@ describe('My Emitter', () => {
   });
 
   it('built-in keys', () => {
-    const emitter = new Emitter({
+    const emitter = Emitter({
       strict: true,
       keys: ['event'],
     });
@@ -82,7 +82,7 @@ describe('My Emitter', () => {
   });
 
   it('add during emitting', async () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
     const fn = mock.fn();
     emitter.on('test', fn);
@@ -100,7 +100,7 @@ describe('My Emitter', () => {
   });
 
   it('rm during emitting', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const mock = Mock();
     const bmock = Mock();
 
@@ -122,7 +122,7 @@ describe('My Emitter', () => {
   });
 
   it('emitAsync all rm', async () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const a = Mock();
     const b = Mock();
 
@@ -143,7 +143,7 @@ describe('My Emitter', () => {
   });
 
   it('emitAsync all once', async () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const a = Mock();
 
     const fn = a.fn();
@@ -158,7 +158,7 @@ describe('My Emitter', () => {
   });
 
   it('removeAll', () => {
-    const emitter = new Emitter();
+    const emitter = Emitter();
     const a = Mock();
 
     const fn = a.fn();
