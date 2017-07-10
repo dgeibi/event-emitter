@@ -1,25 +1,12 @@
 /* eslint-disable no-param-reassign */
+const Store = require('./Store');
+
 function EventEmitter(opts) {
   const store = new Store(opts);
   const emitter = {};
 
   const addListener = (key, fn, once, prepend) => {
-    if (store.opts.strict && !store.opts.keys.includes(key)) {
-      throw Error(`${key} is not a built-in key`);
-    }
-
-    if (!Array.isArray(store.listeners[key])) {
-      store.listeners[key] = [];
-    }
-
-    const listener = { fn, once };
-    const action = prepend ? 'unshift' : 'push';
-    if (store.isActive(key)) {
-      if (!store.nextListeners[key]) store.nextListeners[key] = store.listeners[key].slice();
-      store.nextListeners[key][action](listener);
-    } else {
-      store.listeners[key][action](listener);
-    }
+    store.addListener(key, fn, once, prepend);
     return emitter;
   };
 
@@ -103,35 +90,5 @@ function EventEmitter(opts) {
 }
 
 EventEmitter.EventEmitter = EventEmitter;
-
-function Store(opts) {
-  this.listeners = {};
-  this.nextListeners = {};
-  this.working = {};
-  this.opts = Object.assign({ strict: false, keys: [] }, opts);
-}
-
-Object.assign(Store.prototype, {
-  syncListeners(key) {
-    const active = this.isActive(key);
-    const listeners = this.nextListeners[key] || this.listeners[key];
-    this[active ? 'nextListeners' : 'listeners'][key] = listeners.filter(
-      x => !(x.toRemove || x.done)
-    );
-    if (!active) this.nextListeners[key] = null;
-  },
-
-  isActive(key) {
-    return this.working[key] > 0;
-  },
-
-  markActive(key) {
-    this.working[key] = (this.working[key] || 0) + 1;
-  },
-
-  markInActive(key) {
-    this.working[key] -= 1;
-  },
-});
 
 module.exports = EventEmitter;
