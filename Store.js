@@ -67,6 +67,10 @@ Object.assign(Store.prototype, {
   markInActive(key) {
     this.working[key] -= 1;
   },
+
+  getListeners(key) {
+    return this.listeners[key];
+  },
 });
 
 module.exports = Store;

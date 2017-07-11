@@ -13,9 +13,12 @@ function EventEmitter(opts) {
   const emitAsync = (key, ...args) => {
     store.markActive(key);
 
-    const listeners = store.listeners[key];
+    const listeners = store.getListeners(key);
     const promise = Promise.resolve();
-    if (!Array.isArray(listeners)) return promise;
+    if (!listeners || !listeners.length) {
+      store.markInActive(key);
+      return promise;
+    }
 
     const reducer = (promises, listener) =>
       promises.then(() => {
@@ -33,8 +36,11 @@ function EventEmitter(opts) {
   const emit = (key, ...args) => {
     store.markActive(key);
 
-    const listeners = store.listeners[key];
-    if (!Array.isArray(listeners)) return emitter;
+    const listeners = store.getListeners(key);
+    if (!listeners || !listeners.length) {
+      store.markInActive(key);
+      return emitter;
+    }
     listeners.forEach((listener) => {
       if (listener.done) return;
       listener.done = listener.once;
@@ -47,8 +53,8 @@ function EventEmitter(opts) {
   };
 
   const removeListener = (key, fn) => {
-    const listeners = store.listeners[key];
-    if (!listeners || typeof fn !== 'function') return emitter;
+    const listeners = store.getListeners(key);
+    if (!listeners || !listeners.length || typeof fn !== 'function') return emitter;
 
     let toRemove = false;
     for (let index = 0, length = listeners.length; index < length; index += 1) {
@@ -67,7 +73,7 @@ function EventEmitter(opts) {
 
   const removeAllListeners = (key) => {
     if (key) {
-      const listeners = store.listeners[key];
+      const listeners = store.getListeners(key);
       if (!listeners || !listeners.length) return emitter;
       listeners.forEach((x) => { x.toRemove = true; });
       store.syncListeners(key);
@@ -86,6 +92,7 @@ function EventEmitter(opts) {
   emitter.emitAsync = emitAsync;
   emitter.removeListener = removeListener;
   emitter.removeAllListeners = removeAllListeners;
+  emitter._store = store; // eslint-disable-line no-underscore-dangle
   return emitter;
 }
 
