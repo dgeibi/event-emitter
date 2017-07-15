@@ -95,6 +95,13 @@ describe('Node.js EventEmitter', () => {
     expect(mock.count).to.equal(0);
   });
 
+  it('emit returns true if the event had listeners, false otherwise.', () => {
+    const emitter = new Emitter();
+    emitter.on('test', () => { });
+    expect(emitter.emit('test')).to.equal(true);
+    expect(emitter.emit('xxxx')).to.equal(false);
+  });
+
   it('removeAll', () => {
     const emitter = new Emitter();
     const a = Mock();

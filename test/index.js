@@ -15,6 +15,20 @@ describe('My Emitter', () => {
     expect(mock.count).to.equal(2);
   });
 
+  it('emit returns true if the event had listeners, false otherwise.', () => {
+    const emitter = Emitter();
+    emitter.on('test', () => { });
+    expect(emitter.emit('test')).to.equal(true);
+    expect(emitter.emit('xxxx')).to.equal(false);
+  });
+
+  it('emitAsync returns a Promise of true if the event had listeners, a Promise of false otherwise.', async () => {
+    const emitter = Emitter();
+    emitter.on('test', () => { });
+    expect((await emitter.emitAsync('test'))).to.equal(true);
+    expect((await emitter.emitAsync('xxxx'))).to.equal(false);
+  });
+
   it('prependListener', () => {
     const emitter = Emitter();
     const mock = Mock();
@@ -171,5 +185,15 @@ describe('My Emitter', () => {
     emitter.emit('x');
 
     expect(a.count).to.equal(0);
+  });
+
+  it('symbol key', () => {
+    const emitter = Emitter();
+    const symbol = Symbol(1);
+    const fn = () => { };
+    emitter.on(symbol, fn);
+    expect(emitter.emit(symbol)).to.equal(true);
+    emitter.removeListener(symbol, fn);
+    expect(emitter.emit(symbol)).to.equal(false);
   });
 });

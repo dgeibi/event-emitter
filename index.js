@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const Store = require('./Store');
+const keysOf = require('./keysOf');
 
 function EventEmitter(opts) {
   const store = new Store(opts);
@@ -14,7 +15,7 @@ function EventEmitter(opts) {
     store.markActive(key);
 
     const listeners = store.getListeners(key);
-    const promise = Promise.resolve();
+    const promise = Promise.resolve(false);
     if (!listeners || !listeners.length) {
       store.markInActive(key);
       return promise;
@@ -30,6 +31,7 @@ function EventEmitter(opts) {
     return listeners.reduce(reducer, promise).then(() => {
       store.markInActive(key);
       store.syncListeners(key);
+      return true;
     });
   };
 
@@ -39,7 +41,7 @@ function EventEmitter(opts) {
     const listeners = store.getListeners(key);
     if (!listeners || !listeners.length) {
       store.markInActive(key);
-      return emitter;
+      return false;
     }
     listeners.forEach((listener) => {
       if (listener.done) return;
@@ -49,13 +51,15 @@ function EventEmitter(opts) {
 
     store.markInActive(key);
     store.syncListeners(key);
-    return emitter;
+    return true;
   };
 
   const removeListener = (key, fn) => {
     const listeners = store.getListeners(key);
-    if (!listeners || !listeners.length || typeof fn !== 'function') return emitter;
-
+    if (!listeners || !listeners.length) return emitter;
+    if (typeof fn !== 'function') {
+      throw TypeError('"listener" argument must be a function');
+    }
     let toRemove = false;
     for (let index = 0, length = listeners.length; index < length; index += 1) {
       const listener = listeners[index];
@@ -79,7 +83,7 @@ function EventEmitter(opts) {
       store.syncListeners(key);
       return emitter;
     }
-    Object.keys(store.listeners).forEach(removeAllListeners);
+    keysOf(store.listeners).forEach(removeAllListeners);
     return emitter;
   };
 
@@ -95,7 +99,5 @@ function EventEmitter(opts) {
   emitter._store = store; // eslint-disable-line no-underscore-dangle
   return emitter;
 }
-
-EventEmitter.EventEmitter = EventEmitter;
 
 module.exports = EventEmitter;
