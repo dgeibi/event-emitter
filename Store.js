@@ -1,31 +1,27 @@
 const forEachRight = require('./forEachRight');
 
-function Store(opts) {
+function Store() {
   this.listeners = {};
   this.nextListeners = {};
   this.working = {};
-  this.opts = Object.assign({ strict: false, keys: [] }, opts);
 }
 
-Store.remove = (x, index, listeners) => {
-  if (x.done || x.toRemove) {
+Store.sweep = (item, index, listeners) => {
+  if (item.done || item.toRemove) {
     listeners.splice(index, 1);
   }
 };
 
 Store.normalize = (listeners) => {
-  forEachRight(listeners, Store.remove);
+  forEachRight(listeners, Store.sweep);
   return listeners;
 };
 
 Object.assign(Store.prototype, {
   addListener(key, fn, once, prepend) {
-    if (this.opts.strict && !this.opts.keys.includes(key)) {
-      throw Error(`${key} is not a built-in key`);
-    }
-
-    if (!Array.isArray(this.listeners[key])) {
+    if (!this.listeners[key]) {
       this.listeners[key] = [];
+      this.working[key] = 0;
     }
 
     const listener = { fn, once };
@@ -61,7 +57,7 @@ Object.assign(Store.prototype, {
   },
 
   markActive(key) {
-    this.working[key] = (this.working[key] || 0) + 1;
+    this.working[key] += 1;
   },
 
   markInActive(key) {

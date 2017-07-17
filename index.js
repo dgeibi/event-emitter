@@ -2,8 +2,8 @@
 const Store = require('./Store');
 const keysOf = require('./keysOf');
 
-function EventEmitter(opts) {
-  const store = new Store(opts);
+function EventEmitter() {
+  const store = new Store();
   const emitter = {};
 
   const addListener = (key, fn, once, prepend) => {
@@ -12,15 +12,13 @@ function EventEmitter(opts) {
   };
 
   const emitAsync = (key, ...args) => {
-    store.markActive(key);
-
     const listeners = store.getListeners(key);
     const promise = Promise.resolve(false);
     if (!listeners || !listeners.length) {
-      store.markInActive(key);
       return promise;
     }
 
+    store.markActive(key);
     const reducer = (promises, listener) =>
       promises.then(() => {
         if (listener.done || listener.toRemove) return;
@@ -36,13 +34,12 @@ function EventEmitter(opts) {
   };
 
   const emit = (key, ...args) => {
-    store.markActive(key);
-
     const listeners = store.getListeners(key);
     if (!listeners || !listeners.length) {
-      store.markInActive(key);
       return false;
     }
+
+    store.markActive(key);
     listeners.forEach((listener) => {
       if (listener.done) return;
       listener.done = listener.once;
@@ -79,7 +76,9 @@ function EventEmitter(opts) {
     if (key) {
       const listeners = store.getListeners(key);
       if (!listeners || !listeners.length) return emitter;
-      listeners.forEach((x) => { x.toRemove = true; });
+      listeners.forEach((x) => {
+        x.toRemove = true;
+      });
       store.syncListeners(key);
       return emitter;
     }

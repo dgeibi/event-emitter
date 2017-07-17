@@ -1,10 +1,7 @@
 declare module "event-emitter" {
-  export interface StoreOptions {
-    strict?: boolean, // default: false
-    key?: Array,
-  }
+  export = internal
 
-  export interface EventEmitter {
+  interface EventEmitter {
     addListener(event: string | symbol, listener: Function): this;
     on(event: string | symbol, listener: Function): this;
     once(event: string | symbol, listener: Function): this;
@@ -16,7 +13,5 @@ declare module "event-emitter" {
     emitAsync(event: string | symbol, ...args: any[]): Promise<boolean>;
   }
 
-  declare function internal(opts?: StoreOptions): EventEmitter;
-
-  export = internal
+  function internal(): EventEmitter;
 }

@@ -20,12 +20,18 @@ describe('Node.js EventEmitter', () => {
     const mock = Mock();
     let ret = '';
 
-    emitter.on('test', mock.fn(() => {
-      ret += 'world';
-    }));
-    emitter.prependListener('test', mock.fn(() => {
-      ret += 'hello ';
-    }));
+    emitter.on(
+      'test',
+      mock.fn(() => {
+        ret += 'world';
+      })
+    );
+    emitter.prependListener(
+      'test',
+      mock.fn(() => {
+        ret += 'hello ';
+      })
+    );
 
     emitter.emit('test');
     expect(ret).to.equal('hello world');
@@ -79,10 +85,13 @@ describe('Node.js EventEmitter', () => {
     const bmock = Mock();
 
     const fn = mock.fn();
-    emitter.on('test', bmock.fn(() => {
-      emitter.removeListener('test', fn);
-      emitter.removeListener('test', fn);
-    }));
+    emitter.on(
+      'test',
+      bmock.fn(() => {
+        emitter.removeListener('test', fn);
+        emitter.removeListener('test', fn);
+      })
+    );
     emitter.on('test', fn);
     emitter.on('test', fn);
 
@@ -97,7 +106,7 @@ describe('Node.js EventEmitter', () => {
 
   it('emit returns true if the event had listeners, false otherwise.', () => {
     const emitter = new Emitter();
-    emitter.on('test', () => { });
+    emitter.on('test', () => {});
     expect(emitter.emit('test')).to.equal(true);
     expect(emitter.emit('xxxx')).to.equal(false);
   });

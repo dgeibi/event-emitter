@@ -1,12 +1,12 @@
 {
   "name": "event-emitter",
-  "version": "0.0.1",
-  "description": "a little event emitter",
+  "version": "0.0.2",
+  "description": "a functional event emitter",
   "main": "index.js",
   "scripts": {
     "test": "mocha",
     "lint": "eslint .",
-    "format": "prettier-eslint --write ./*.js test/**/*.js"
+    "format": "prettier-eslint --write './*.js' 'test/**/*.js'"
   },
   "author": "dgeibi",
   "license": "MIT",
@@ -19,5 +19,17 @@
     "eslint-plugin-no-async-without-await": "^1.2.0",
     "mocha": "^3.4.2",
     "prettier-eslint-cli": "^4.1.1"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dgeibi/event-emitter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dgeibi/event-emitter/issues"
+  },
+  "homepage": "https://github.com/dgeibi/event-emitter#readme"
 }

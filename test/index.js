@@ -17,16 +17,16 @@ describe('My Emitter', () => {
 
   it('emit returns true if the event had listeners, false otherwise.', () => {
     const emitter = Emitter();
-    emitter.on('test', () => { });
+    emitter.on('test', () => {});
     expect(emitter.emit('test')).to.equal(true);
     expect(emitter.emit('xxxx')).to.equal(false);
   });
 
   it('emitAsync returns a Promise of true if the event had listeners, a Promise of false otherwise.', async () => {
     const emitter = Emitter();
-    emitter.on('test', () => { });
-    expect((await emitter.emitAsync('test'))).to.equal(true);
-    expect((await emitter.emitAsync('xxxx'))).to.equal(false);
+    emitter.on('test', () => {});
+    expect(await emitter.emitAsync('test')).to.equal(true);
+    expect(await emitter.emitAsync('xxxx')).to.equal(false);
   });
 
   it('prependListener', () => {
@@ -34,12 +34,18 @@ describe('My Emitter', () => {
     const mock = Mock();
     let ret = '';
 
-    emitter.on('test', mock.fn(() => {
-      ret += 'world';
-    }));
-    emitter.prependListener('test', mock.fn(() => {
-      ret += 'hello ';
-    }));
+    emitter.on(
+      'test',
+      mock.fn(() => {
+        ret += 'world';
+      })
+    );
+    emitter.prependListener(
+      'test',
+      mock.fn(() => {
+        ret += 'hello ';
+      })
+    );
 
     emitter.emit('test');
     expect(ret).to.equal('hello world');
@@ -80,21 +86,6 @@ describe('My Emitter', () => {
     expect(mock.count).to.equal(1);
   });
 
-  it('built-in keys', () => {
-    const emitter = Emitter({
-      strict: true,
-      keys: ['event'],
-    });
-    const mock = Mock();
-    const fn = mock.fn();
-    expect(() => {
-      emitter.on('test', fn);
-    }).throws();
-    expect(() => {
-      emitter.on('event', fn);
-    }).not.throws();
-  });
-
   it('add during emitting', async () => {
     const emitter = Emitter();
     const mock = Mock();
@@ -119,10 +110,13 @@ describe('My Emitter', () => {
     const bmock = Mock();
 
     const fn = mock.fn();
-    emitter.on('test', bmock.fn(() => {
-      emitter.removeListener('test', fn);
-      emitter.removeListener('test', fn);
-    }));
+    emitter.on(
+      'test',
+      bmock.fn(() => {
+        emitter.removeListener('test', fn);
+        emitter.removeListener('test', fn);
+      })
+    );
     emitter.on('test', fn);
     emitter.on('test', fn);
 
@@ -141,17 +135,17 @@ describe('My Emitter', () => {
     const b = Mock();
 
     const fn = a.fn();
-    emitter.on('test', b.fn(() => {
-      emitter.removeListener('test', fn);
-      emitter.removeListener('test', fn);
-    }));
+    emitter.on(
+      'test',
+      b.fn(() => {
+        emitter.removeListener('test', fn);
+        emitter.removeListener('test', fn);
+      })
+    );
     emitter.on('test', fn);
     emitter.on('test', fn);
 
-    await Promise.all([
-      emitter.emitAsync('test'),
-      emitter.emitAsync('test'),
-    ]);
+    await Promise.all([emitter.emitAsync('test'), emitter.emitAsync('test')]);
     expect(b.count).to.equal(2);
     expect(a.count).to.equal(0);
   });
@@ -164,10 +158,7 @@ describe('My Emitter', () => {
     emitter.once('test', fn);
     emitter.once('test', fn);
 
-    await Promise.all([
-      emitter.emitAsync('test'),
-      emitter.emitAsync('test'),
-    ]);
+    await Promise.all([emitter.emitAsync('test'), emitter.emitAsync('test')]);
     expect(a.count).to.equal(2);
   });
 
@@ -190,7 +181,7 @@ describe('My Emitter', () => {
   it('symbol key', () => {
     const emitter = Emitter();
     const symbol = Symbol(1);
-    const fn = () => { };
+    const fn = () => {};
     emitter.on(symbol, fn);
     expect(emitter.emit(symbol)).to.equal(true);
     emitter.removeListener(symbol, fn);
