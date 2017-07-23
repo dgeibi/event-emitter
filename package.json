@@ -1,14 +1,14 @@
 {
-  "name": "event-emitter",
+  "name": "uemitter",
   "version": "0.0.3",
   "description": "a functional event emitter",
   "main": "dist/emitter.js",
   "scripts": {
-    "build": "rollup -c",
+    "rollup": "rollup -c",
     "test": "mocha",
     "lint": "eslint src test",
     "format": "prettier-eslint --write 'src/*.js' 'test/**/*.js'",
-    "prepublish": "npm run build"
+    "prepare": "npm run rollup"
   },
   "author": "dgeibi",
   "license": "MIT",
@@ -35,5 +35,9 @@
   "bugs": {
     "url": "https://github.com/dgeibi/event-emitter/issues"
   },
-  "homepage": "https://github.com/dgeibi/event-emitter#readme"
+  "homepage": "https://github.com/dgeibi/event-emitter#readme",
+  "files": [
+    "dist",
+    "index.d.ts"
+  ]
 }

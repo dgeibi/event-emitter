@@ -1,4 +1,4 @@
-# event-emitter
+# uemitter
 
 - API like [Node's EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
 - support `emitAsync`
@@ -7,14 +7,14 @@
 ## Install
 
 ```
-$ npm install dgeibi/event-emitter
+$ npm install uemitter
 ```
 
 ## Usage
 
 ``` js
-import Emitter from 'event-emitter';
-// or // const Emitter = require('event-emitter');
+import Emitter from 'uemitter';
+// or // const Emitter = require('uemitter');
 
 const emitter = Emitter();
 

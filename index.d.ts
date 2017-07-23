@@ -1,4 +1,4 @@
-declare module "event-emitter" {
+declare module "uemitter" {
   export = internal
 
   interface EventEmitter {
