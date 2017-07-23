@@ -1,4 +1,4 @@
-const forEachRight = require('./forEachRight');
+import forEachRight from './forEachRight';
 
 function Store() {
   this.listeners = {};
@@ -69,4 +69,4 @@ Object.assign(Store.prototype, {
   },
 });
 
-module.exports = Store;
+export default Store;

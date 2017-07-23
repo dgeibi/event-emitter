@@ -5,4 +5,4 @@ const forEachRight = (array, callback) => {
   }
 };
 
-module.exports = forEachRight;
+export default forEachRight;

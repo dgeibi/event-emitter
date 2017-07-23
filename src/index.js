@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-const Store = require('./Store');
-const keysOf = require('./keysOf');
+import Store from './Store';
+import keysOf from './keysOf';
 
 function EventEmitter() {
   const store = new Store();
@@ -99,4 +99,4 @@ function EventEmitter() {
   return emitter;
 }
 
-module.exports = EventEmitter;
+export default EventEmitter;

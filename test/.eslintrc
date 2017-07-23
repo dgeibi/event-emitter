@@ -1,4 +1,5 @@
 {
+  "extends": "dgeibi",
   "env": {
     "mocha": true
   }
