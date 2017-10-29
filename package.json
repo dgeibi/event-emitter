@@ -1,8 +1,9 @@
 {
   "name": "uemitter",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "a functional event emitter",
-  "main": "dist/emitter.js",
+  "main": "./dist/emitter.js",
+  "typings": "./index.d.ts",
   "scripts": {
     "rollup": "rollup -c",
     "test": "mocha",
